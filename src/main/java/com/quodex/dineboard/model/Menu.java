@@ -2,16 +2,10 @@ package com.quodex.dineboard.model;
 
 import com.quodex.dineboard.dto.MenuDTO;
 import jakarta.persistence.*;
-import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Table(name = "menus")
 public class Menu {
 
@@ -28,12 +22,75 @@ public class Menu {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public Menu() {}
+
+    public Menu(Long id, String title, Hotel hotel, boolean isPublished,
+                LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.title = title;
+        this.hotel = hotel;
+        this.isPublished = isPublished;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public MenuDTO toDTO() {
-        return MenuDTO.builder()
-                .id(this.id)
-                .title(this.title)
-                .hotelId(this.hotel != null ? this.hotel.getId() : null)
-                .isPublished(this.isPublished)
-                .build();
+        return new MenuDTO(
+                this.id,
+                this.title,
+                this.hotel != null ? this.hotel.getId() : null,
+                this.isPublished
+        );
+    }
+
+    // --- Getters and Setters ---
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Hotel getHotel() {
+        return hotel;
+    }
+
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
+    }
+
+    public boolean getIsPublished() {
+        return isPublished;
+    }
+
+    public void setIsPublished(boolean isPublished) {
+        this.isPublished = isPublished;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

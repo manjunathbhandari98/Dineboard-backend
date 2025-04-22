@@ -1,25 +1,66 @@
 package com.quodex.dineboard.dto;
 
+import com.quodex.dineboard.model.Hotel;
 import com.quodex.dineboard.model.Menu;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-@Builder
 public class MenuDTO {
+
     private Long id;
     private String title;
     private Long hotelId;
     private boolean isPublished;
 
-    public Menu toEntity() {
-        return Menu.builder()
-                .id(this.id)
-                .title(this.title)
-                .isPublished(this.isPublished)
-                // NOTE: Hotel should be set separately in service/controller
-                .build();
+    public MenuDTO() {}
+
+    public MenuDTO(Long id, String title, Long hotelId, boolean isPublished) {
+        this.id = id;
+        this.title = title;
+        this.hotelId = hotelId;
+        this.isPublished = isPublished;
+    }
+
+    public Menu toEntity(Hotel hotel) {
+        return new Menu(
+                this.id,
+                this.title,
+                hotel,
+                this.isPublished,
+                null,
+                null
+        );
+    }
+
+    // --- Getters and Setters ---
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Long getHotelId() {
+        return hotelId;
+    }
+
+    public void setHotelId(Long hotelId) {
+        this.hotelId = hotelId;
+    }
+
+    public boolean getIsPublished() {
+        return isPublished;
+    }
+
+    public void setIsPublished(boolean isPublished) {
+        this.isPublished = isPublished;
     }
 }

@@ -1,26 +1,91 @@
 package com.quodex.dineboard.dto;
 
-import com.quodex.dineboard.model.MenuItem;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-@Builder
 public class MenuItemDTO {
+
     private Long id;
     private String name;
     private String description;
     private double price;
-    private Long menuId;
+    private Long menuId;  // Assuming you want to include the associated Menu ID
+    private Long categoryId;  // Add categoryId to include category information
 
-    public MenuItem toEntity() {
-        return MenuItem.builder()
-                .id(this.id)
-                .name(this.name)
-                .description(this.description)
-                .price(this.price)
-                .build();
+    private String itemImage;
+    private byte[] itemImageBytes;
+
+    public MenuItemDTO(Long id, String name, String description, double price, Long menuId, Long categoryId, String itemImage, byte[] itemImageBytes) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.menuId = menuId;
+        this.categoryId = categoryId;
+        this.itemImage = itemImage;
+        this.itemImageBytes = itemImageBytes;
+    }
+
+    // --- Getters and Setters ---
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public Long getMenuId() {
+        return menuId;
+    }
+
+    public void setMenuId(Long menuId) {
+        this.menuId = menuId;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getItemImage() {
+        return itemImage;
+    }
+
+    public void setItemImage(String itemImage) {
+        this.itemImage = itemImage;
+    }
+
+    public byte[] getItemImageBytes() {
+        return itemImageBytes;
+    }
+
+    public void setItemImageBytes(byte[] itemImageBytes) {
+        this.itemImageBytes = itemImageBytes;
     }
 }

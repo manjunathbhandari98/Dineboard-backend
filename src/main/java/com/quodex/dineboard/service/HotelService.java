@@ -6,13 +6,16 @@ import java.util.List;
 
 public interface HotelService {
 
-    public HotelDTO createHotel(HotelDTO hotelDTO);
+    // Change: Accept ownerId (Long) instead of User, to fetch User in the implementation
+    HotelDTO createHotel(HotelDTO hotelDTO, Long ownerId);
 
-    public HotelDTO getHotelById(Long id);
+    HotelDTO getHotelById(Long id);
 
-    public List<HotelDTO> getAllHotels();
+    List<HotelDTO> getAllHotels();
 
-    public HotelDTO updateHotel(Long id, HotelDTO hotelDTO);
+    HotelDTO updateHotel(Long id, HotelDTO hotelDTO);
 
-    public void deleteHotel(Long id);
+    void deleteHotel(Long id);
+
+    HotelDTO getHotelByUserId(Long userId);
 }
