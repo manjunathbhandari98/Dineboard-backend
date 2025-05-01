@@ -5,7 +5,7 @@ import com.quodex.dineboard.dto.CategoryDTO;
 import java.util.List;
 
 public interface CategoryService {
-    List<CategoryDTO> getAllCategories(Long menuId);
+    List<CategoryDTO> getAllCategories(String menuId);
 
     CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO);
 

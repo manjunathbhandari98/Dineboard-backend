@@ -21,14 +21,12 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plan_id", nullable = true)
-    private Plan plan;
+
 
     public User() {}
 
     public User(Long id, String name, String email, String password, LocalDateTime createdAt,
-                LocalDateTime updatedAt, AccountType accountType, Plan plan) {
+                LocalDateTime updatedAt, AccountType accountType) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -36,7 +34,6 @@ public class User {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.accountType = accountType;
-        this.plan = plan;
     }
 
     public Long getId() {
@@ -95,17 +92,10 @@ public class User {
         this.accountType = accountType;
     }
 
-    public Plan getPlan() {
-        return plan;
-    }
-
-    public void setPlan(Plan plan) {
-        this.plan = plan;
-    }
 
     public UserDTO toDTO() {
-        Long planId = (plan != null) ? plan.getId() : null;
-        return new UserDTO(id, name, email, accountType, planId);
+
+        return new UserDTO(id, name, email, accountType);
     }
 
 }

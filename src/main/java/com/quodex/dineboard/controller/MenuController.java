@@ -1,8 +1,10 @@
 package com.quodex.dineboard.controller;
 
 import com.quodex.dineboard.dto.MenuDTO;
+import com.quodex.dineboard.exception.DineBoardException;
 import com.quodex.dineboard.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +18,12 @@ public class MenuController {
     private MenuService menuService;
 
     @PostMapping
-    public ResponseEntity<MenuDTO> createMenu(@RequestBody MenuDTO menuDTO) {
-        return ResponseEntity.ok(menuService.createMenu(menuDTO));
+    public ResponseEntity<MenuDTO> createMenu(@RequestBody MenuDTO menuDTO) throws DineBoardException {
+        return new ResponseEntity<MenuDTO>(menuService.createMenu(menuDTO), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MenuDTO> getMenu(@PathVariable Long id) {
+    public ResponseEntity<MenuDTO> getMenu(@PathVariable String id) {
         return ResponseEntity.ok(menuService.getMenuById(id));
     }
 
@@ -38,13 +40,22 @@ public class MenuController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<MenuDTO> updateMenu(@PathVariable Long id, @RequestBody MenuDTO menuDTO) {
+    public ResponseEntity<MenuDTO> updateMenu(@PathVariable String id, @RequestBody MenuDTO menuDTO) {
         return ResponseEntity.ok(menuService.updateMenu(id, menuDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMenu(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteMenu(@PathVariable String id) {
         menuService.deleteMenu(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PostMapping("analytics/{id}/track-view")
+    public ResponseEntity<Void> trackMenuView(
+            @PathVariable String id) {
+        menuService.trackMenuView(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

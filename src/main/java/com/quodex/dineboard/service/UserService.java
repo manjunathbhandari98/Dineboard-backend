@@ -6,6 +6,6 @@ public interface UserService {
     UserDTO registerUser(UserDTO userDTO);
     UserDTO loginUser(String email, String password);
     UserDTO getUserByEmail(String email);
-    UserDTO updateUserPlan(Long userId, Long planId);
+    UserDTO updateUserPlan(Long userId, Integer planId);
 
 }

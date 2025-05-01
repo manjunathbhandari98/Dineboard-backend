@@ -16,7 +16,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping("/categories/{menuId}")
-    public ResponseEntity<List<CategoryDTO>> getAllCategories(@PathVariable Long menuId){
+    public ResponseEntity<List<CategoryDTO>> getAllCategories(@PathVariable String menuId){
         return ResponseEntity.ok(categoryService.getAllCategories(menuId));
     }
 

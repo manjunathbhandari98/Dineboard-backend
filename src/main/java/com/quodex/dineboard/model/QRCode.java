@@ -16,23 +16,35 @@ public class QRCode {
     @ManyToOne
     private Menu menu;
 
+    @ManyToOne
+    private Hotel hotel;
+
+    @Lob
     private String url;
+
+    @Lob
+    private byte[] urlBytes;
 
     public QRCode() {}
 
-    public QRCode(Long id, String label, Menu menu, String url) {
+    public QRCode(Long id, String label, Menu menu, Hotel hotel, String url, byte[] urlBytes) {
         this.id = id;
         this.label = label;
         this.menu = menu;
+        this.hotel = hotel;
         this.url = url;
+        this.urlBytes = urlBytes;
     }
 
     public QRCodeDTO toDTO() {
+        String base64Image = this.urlBytes != null ? "data:image/png;base64," + java.util.Base64.getEncoder().encodeToString(this.urlBytes) : null;
         return new QRCodeDTO(
                 this.id,
                 this.label,
                 this.menu != null ? this.menu.getId() : null,
-                this.url
+                this.hotel != null? this.hotel.getId() :null,
+                base64Image,
+                this.urlBytes
         );
     }
 
@@ -62,11 +74,27 @@ public class QRCode {
         this.menu = menu;
     }
 
+    public Hotel getHotel() {
+        return hotel;
+    }
+
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
+    }
+
     public String getUrl() {
         return url;
     }
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public byte[] getUrlBytes() {
+        return urlBytes;
+    }
+
+    public void setUrlBytes(byte[] urlBytes) {
+        this.urlBytes = urlBytes;
     }
 }

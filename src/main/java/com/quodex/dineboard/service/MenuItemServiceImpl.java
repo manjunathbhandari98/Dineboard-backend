@@ -9,6 +9,7 @@ import com.quodex.dineboard.repository.MenuItemRepository;
 import com.quodex.dineboard.repository.MenuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +66,7 @@ public class MenuItemServiceImpl implements MenuItemService{
                 .collect(Collectors.toList());
     }
 
-    public List<MenuItemDTO> getMenuItemsByMenuId(Long menuId, Long categoryId) {
+    public List<MenuItemDTO> getMenuItemsByMenuAndCategoryId(String menuId, Long categoryId) {
         return menuItemRepository.findByMenuIdAndCategoryId(menuId, categoryId).stream()
                 .map(MenuItem::toDTO)
                 .collect(Collectors.toList());
@@ -103,4 +104,14 @@ public class MenuItemServiceImpl implements MenuItemService{
     public void deleteMenuItem(Long id) {
         menuItemRepository.deleteById(id);
     }
+
+    @Override
+    public List<MenuItemDTO> getMenuItemsByMenuId(String menuId) {
+        return menuItemRepository.findByMenuId(menuId).stream()
+                .map(MenuItem::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
+
 }

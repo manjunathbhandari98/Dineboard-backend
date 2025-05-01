@@ -30,17 +30,12 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Email already exists.");
         }
 
-        Plan plan = null;
-        if (userDTO.getPlanId() != null) {
-            plan = planRepository.findById(userDTO.getPlanId())
-                    .orElseThrow(() -> new RuntimeException("Invalid plan ID"));
-        }
 
         userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userDTO.setCreatedAt(LocalDateTime.now());
         userDTO.setUpdatedAt(LocalDateTime.now());
 
-        User savedUser = userRepository.save(userDTO.toEntity(plan));
+        User savedUser = userRepository.save(userDTO.toEntity());
         return savedUser.toDTO();
     }
 
@@ -65,14 +60,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUserPlan(Long userId, Long planId) {
+    public UserDTO updateUserPlan(Long userId, Integer planId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new RuntimeException("Plan not found"));
 
-        user.setPlan(plan);
         user.setUpdatedAt(LocalDateTime.now());
 
         return userRepository.save(user).toDTO();

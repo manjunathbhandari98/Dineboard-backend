@@ -18,7 +18,7 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private MenuRepository menuRepository;
     @Override
-    public List<CategoryDTO> getAllCategories(Long menuId) {
+    public List<CategoryDTO> getAllCategories(String menuId) {
         return categoryRepository.findByMenuId(menuId)
                 .stream()
                 .map(Category::toDTO)

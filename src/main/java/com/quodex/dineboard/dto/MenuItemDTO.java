@@ -6,13 +6,13 @@ public class MenuItemDTO {
     private String name;
     private String description;
     private double price;
-    private Long menuId;  // Assuming you want to include the associated Menu ID
+    private String menuId;  // Assuming you want to include the associated Menu ID
     private Long categoryId;  // Add categoryId to include category information
 
     private String itemImage;
     private byte[] itemImageBytes;
 
-    public MenuItemDTO(Long id, String name, String description, double price, Long menuId, Long categoryId, String itemImage, byte[] itemImageBytes) {
+    public MenuItemDTO(Long id, String name, String description, double price, String menuId, Long categoryId, String itemImage, byte[] itemImageBytes) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -57,11 +57,11 @@ public class MenuItemDTO {
         this.price = price;
     }
 
-    public Long getMenuId() {
+    public String getMenuId() {
         return menuId;
     }
 
-    public void setMenuId(Long menuId) {
+    public void setMenuId(String menuId) {
         this.menuId = menuId;
     }
 

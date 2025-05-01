@@ -1,9 +1,8 @@
-package com.quodex.dineboard.service.impl;
+package com.quodex.dineboard.service;
 
 import com.quodex.dineboard.dto.PlanDTO;
 import com.quodex.dineboard.model.Plan;
 import com.quodex.dineboard.repository.PlanRepository;
-import com.quodex.dineboard.service.PlanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +29,7 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public PlanDTO getPlanById(Long id) {
+    public PlanDTO getPlanById(Integer id) {
         Plan plan = planRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Plan not found with id: " + id));
         return plan.toDTO();
@@ -45,13 +44,14 @@ public class PlanServiceImpl implements PlanService {
                 dto.getPrice(),
                 dto.isAllowsWhiteLabeling(),
                 dto.isHighlighted(),
+                dto.getAllowedMenus(),
                 dto.getFeatures()
         );
         return planRepository.save(plan).toDTO();
     }
 
     @Override
-    public PlanDTO updatePlan(Long id, PlanDTO dto) {
+    public PlanDTO updatePlan(Integer id, PlanDTO dto) {
         Plan plan = planRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Plan not found with id: " + id));
 
@@ -59,6 +59,7 @@ public class PlanServiceImpl implements PlanService {
         plan.setDescription(dto.getDescription());
         plan.setPrice(dto.getPrice());
         plan.setAllowsWhiteLabeling(dto.isAllowsWhiteLabeling());
+        plan.setAllowedMenus(dto.getAllowedMenus());
         plan.setHighlighted(dto.isHighlighted());
         plan.setFeatures(dto.getFeatures());
 
@@ -66,7 +67,7 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public void deletePlan(Long id) {
+    public void deletePlan(Integer id) {
         if (!planRepository.existsById(id)) {
             throw new RuntimeException("Plan not found with id: " + id);
         }

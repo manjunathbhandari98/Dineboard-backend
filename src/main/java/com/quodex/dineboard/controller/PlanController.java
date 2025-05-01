@@ -25,7 +25,7 @@ public class PlanController {
     }
 
     @GetMapping("/{id}")
-    public PlanDTO getPlanById(@PathVariable Long id) {
+    public PlanDTO getPlanById(@PathVariable Integer id) {
         return planService.getPlanById(id);
     }
 
@@ -35,12 +35,12 @@ public class PlanController {
     }
 
     @PutMapping("/{id}")
-    public PlanDTO updatePlan(@PathVariable Long id, @RequestBody PlanDTO dto) {
+    public PlanDTO updatePlan(@PathVariable Integer id, @RequestBody PlanDTO dto) {
         return planService.updatePlan(id, dto);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePlan(@PathVariable Long id) {
+    public void deletePlan(@PathVariable Integer id) {
         planService.deletePlan(id);
     }
 }

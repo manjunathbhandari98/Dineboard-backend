@@ -1,14 +1,16 @@
-package com.quodex.dineboard.service.impl;
+package com.quodex.dineboard.service;
 
 import com.quodex.dineboard.dto.QRCodeDTO;
+import com.quodex.dineboard.model.Hotel;
 import com.quodex.dineboard.model.Menu;
 import com.quodex.dineboard.model.QRCode;
+import com.quodex.dineboard.repository.HotelRepository;
 import com.quodex.dineboard.repository.MenuRepository;
 import com.quodex.dineboard.repository.QRCodeRepository;
-import com.quodex.dineboard.service.QRCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,11 +19,22 @@ public class QRCodeServiceImpl implements QRCodeService {
 
     private final QRCodeRepository qrCodeRepository;
     private final MenuRepository menuRepository;
+    private final HotelRepository hotelRepository;
+
 
     @Autowired
-    public QRCodeServiceImpl(QRCodeRepository qrCodeRepository, MenuRepository menuRepository) {
+    public QRCodeServiceImpl(QRCodeRepository qrCodeRepository, MenuRepository menuRepository,
+                             HotelRepository hotelRepository) {
         this.qrCodeRepository = qrCodeRepository;
         this.menuRepository = menuRepository;
+        this.hotelRepository = hotelRepository;
+    }
+
+    private byte[] decodeBase64Image(String base64) {
+        if (base64.contains(",")) {
+            base64 = base64.substring(base64.indexOf(",") + 1);
+        }
+        return Base64.getDecoder().decode(base64);
     }
 
     @Override
@@ -43,7 +56,12 @@ public class QRCodeServiceImpl implements QRCodeService {
     public QRCodeDTO createQRCode(QRCodeDTO dto) {
         Menu menu = menuRepository.findById(dto.getMenuId())
                 .orElseThrow(() -> new RuntimeException("Menu not found with id: " + dto.getMenuId()));
-        QRCode qrCode = dto.toEntity(menu);
+        Hotel hotel = hotelRepository.findById(dto.getHotelId())
+                .orElseThrow(() -> new RuntimeException("Hotel not found with id: "+dto.getHotelId()));
+        if (dto.getUrl() != null && !dto.getUrl().isEmpty()) {
+            dto.setUrlBytes(decodeBase64Image(dto.getUrl()));
+        }
+        QRCode qrCode = dto.toEntity(menu, hotel);
         return qrCodeRepository.save(qrCode).toDTO();
     }
 
@@ -54,6 +72,9 @@ public class QRCodeServiceImpl implements QRCodeService {
         Menu menu = menuRepository.findById(dto.getMenuId())
                 .orElseThrow(() -> new RuntimeException("Menu not found with id: " + dto.getMenuId()));
 
+        if (dto.getUrl() != null && !dto.getUrl().isEmpty()) {
+            dto.setUrlBytes(decodeBase64Image(dto.getUrl()));
+        }
         qrCode.setLabel(dto.getLabel());
         qrCode.setMenu(menu);
         qrCode.setUrl(dto.getUrl());
@@ -70,7 +91,7 @@ public class QRCodeServiceImpl implements QRCodeService {
     }
 
     @Override
-    public List<QRCodeDTO> getQRCodesByMenuId(Long menuId) {
+    public List<QRCodeDTO> getQRCodesByMenuId(String menuId) {
         return qrCodeRepository.findByMenuId(menuId)
                 .stream()
                 .map(QRCode::toDTO)

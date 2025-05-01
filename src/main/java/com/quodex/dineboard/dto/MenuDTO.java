@@ -5,18 +5,23 @@ import com.quodex.dineboard.model.Menu;
 
 public class MenuDTO {
 
-    private Long id;
+    private String id;
     private String title;
     private Long hotelId;
     private boolean isPublished;
 
+    private int viewCount;
+    private int uniqueDeviceCount;
+
     public MenuDTO() {}
 
-    public MenuDTO(Long id, String title, Long hotelId, boolean isPublished) {
+    public MenuDTO(String id, String title, Long hotelId, boolean isPublished, int viewCount, int uniqueDeviceCount) {
         this.id = id;
         this.title = title;
         this.hotelId = hotelId;
         this.isPublished = isPublished;
+        this.viewCount = viewCount;
+        this.uniqueDeviceCount = uniqueDeviceCount;
     }
 
     public Menu toEntity(Hotel hotel) {
@@ -26,17 +31,18 @@ public class MenuDTO {
                 hotel,
                 this.isPublished,
                 null,
-                null
+                null,
+                this.viewCount,
+                this.uniqueDeviceCount
         );
     }
 
-    // --- Getters and Setters ---
-
-    public Long getId() {
+    /*Getters and Setters*/
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -62,5 +68,29 @@ public class MenuDTO {
 
     public void setIsPublished(boolean isPublished) {
         this.isPublished = isPublished;
+    }
+
+    public boolean isPublished() {
+        return isPublished;
+    }
+
+    public void setPublished(boolean published) {
+        isPublished = published;
+    }
+
+    public int getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(int viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public int getUniqueDeviceCount() {
+        return uniqueDeviceCount;
+    }
+
+    public void setUniqueDeviceCount(int uniqueDeviceCount) {
+        this.uniqueDeviceCount = uniqueDeviceCount;
     }
 }

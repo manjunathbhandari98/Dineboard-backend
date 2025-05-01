@@ -4,9 +4,9 @@ public class CategoryDTO {
 
     private Long id;
     private String name;
-    private Long menuId;
+    private String menuId;
 
-    public CategoryDTO(Long id, String name, Long menuId) {
+    public CategoryDTO(Long id, String name, String menuId) {
         this.id = id;
         this.name = name;
         this.menuId = menuId;
@@ -30,11 +30,11 @@ public class CategoryDTO {
         this.name = name;
     }
 
-    public Long getMenuId() {
+    public String getMenuId() {
         return menuId;
     }
 
-    public void setMenuId(Long menuId) {
+    public void setMenuId(String menuId) {
         this.menuId = menuId;
     }
 }

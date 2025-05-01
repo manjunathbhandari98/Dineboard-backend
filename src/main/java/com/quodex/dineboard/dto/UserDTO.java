@@ -1,6 +1,5 @@
 package com.quodex.dineboard.dto;
 
-import com.quodex.dineboard.model.Plan;
 import com.quodex.dineboard.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -26,20 +25,18 @@ public class UserDTO {
 
     private AccountType accountType;
 
-    private Long planId;
 
     public UserDTO() {}
 
-    public UserDTO(Long id, String name, String email, AccountType accountType, Long planId) {
+    public UserDTO(Long id, String name, String email, AccountType accountType) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.accountType = accountType;
-        this.planId = planId;
     }
 
     public UserDTO(Long id, String name, String email, String password,
-                   LocalDateTime createdAt, LocalDateTime updatedAt, AccountType accountType, Long planId) {
+                   LocalDateTime createdAt, LocalDateTime updatedAt, AccountType accountType) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -47,10 +44,9 @@ public class UserDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.accountType = accountType;
-        this.planId = planId;
     }
 
-    public User toEntity(Plan plan) {
+    public User toEntity() {
         return new User(
                 this.id,
                 this.name,
@@ -58,8 +54,8 @@ public class UserDTO {
                 this.password,
                 this.createdAt,
                 this.updatedAt,
-                this.accountType,
-                plan
+                this.accountType
+
         );
     }
 
@@ -121,11 +117,5 @@ public class UserDTO {
         this.accountType = accountType;
     }
 
-    public Long getPlanId() {
-        return planId;
-    }
 
-    public void setPlanId(Long planId) {
-        this.planId = planId;
-    }
 }

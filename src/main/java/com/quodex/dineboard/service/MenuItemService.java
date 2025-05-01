@@ -11,9 +11,12 @@ public interface MenuItemService {
 
     List<MenuItemDTO> getAllMenuItems();
 
-    List<MenuItemDTO> getMenuItemsByMenuId(Long menuId, Long categoryId);
+    List<MenuItemDTO> getMenuItemsByMenuAndCategoryId(String menuId, Long categoryId);
 
     MenuItemDTO updateMenuItem(Long id, MenuItemDTO menuItemDTO);
 
     void deleteMenuItem(Long id);
+
+    List<MenuItemDTO> getMenuItemsByMenuId(String menuId);
+
 }

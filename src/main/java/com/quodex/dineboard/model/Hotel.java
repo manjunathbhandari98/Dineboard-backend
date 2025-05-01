@@ -33,12 +33,15 @@ public class Hotel {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plan_id", nullable = true)
+    private Plan plan;
 
     public Hotel() {}
 
     public Hotel(Long id, String name, String logoUrl, byte[] logoUrlBytes, String address, String contactEmail,
                  String contactPhone, String website, String description, User owner,
-                 LocalDateTime createdAt, LocalDateTime updatedAt) {
+                 LocalDateTime createdAt, LocalDateTime updatedAt, Plan plan) {
         this.id = id;
         this.name = name;
         this.logoUrl = logoUrl;
@@ -51,6 +54,7 @@ public class Hotel {
         this.owner = owner;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.plan = plan;
     }
 
     // Getters and Setters
@@ -91,9 +95,17 @@ public class Hotel {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
+    public Plan getPlan() {
+        return plan;
+    }
+
+    public void setPlan(Plan plan) {
+        this.plan = plan;
+    }
+
     public HotelDTO toDTO() {
         String base64Logo = this.logoUrlBytes != null ? "data:image/png;base64," + java.util.Base64.getEncoder().encodeToString(this.logoUrlBytes) : null;
-
+        Integer planId = (plan != null) ? plan.getId() : null;
         return new HotelDTO(
                 this.id,
                 this.name,
@@ -104,7 +116,8 @@ public class Hotel {
                 this.contactPhone,
                 this.owner != null ? this.owner.getId() : null,
                 this.website,
-                this.description
+                this.description,
+                planId
         );
     }
 }

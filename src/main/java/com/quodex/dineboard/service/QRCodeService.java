@@ -10,5 +10,5 @@ public interface QRCodeService {
     QRCodeDTO createQRCode(QRCodeDTO qrCodeDTO);
     QRCodeDTO updateQRCode(Long id, QRCodeDTO qrCodeDTO);
     void deleteQRCode(Long id);
-    List<QRCodeDTO> getQRCodesByMenuId(Long menuId);
+    List<QRCodeDTO> getQRCodesByMenuId(String menuId);
 }

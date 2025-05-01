@@ -95,6 +95,13 @@
 			<artifactId>spring-security-web</artifactId>
 			<version>6.4.2</version>
 		</dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.razorpay/razorpay-java -->
+        <dependency>
+            <groupId>com.razorpay</groupId>
+            <artifactId>razorpay-java</artifactId>
+            <version>1.4.8</version>
+        </dependency>
 	</dependencies>
 
 	<build>

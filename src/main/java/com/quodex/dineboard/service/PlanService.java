@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface PlanService {
     List<PlanDTO> getAllPlans();
-    PlanDTO getPlanById(Long id);
+    PlanDTO getPlanById(Integer id);
     PlanDTO createPlan(PlanDTO planDTO);
-    PlanDTO updatePlan(Long id, PlanDTO planDTO);
-    void deletePlan(Long id);
+    PlanDTO updatePlan(Integer id, PlanDTO planDTO);
+    void deletePlan(Integer id);
 }

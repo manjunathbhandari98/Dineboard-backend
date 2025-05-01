@@ -1,6 +1,7 @@
 package com.quodex.dineboard.dto;
 
 import com.quodex.dineboard.model.Hotel;
+import com.quodex.dineboard.model.Plan;
 import com.quodex.dineboard.model.User;
 
 public class HotelDTO {
@@ -15,10 +16,12 @@ public class HotelDTO {
     private String website;
     private String description;
 
+    private Integer planId;
+
     public HotelDTO() {}
 
     public HotelDTO(Long id, String name, String logoUrl, byte[] logoUrlBytes, String address, String contactEmail,
-                    String contactPhone, Long ownerId, String website, String description) {
+                    String contactPhone, Long ownerId, String website, String description, Integer planId) {
         this.id = id;
         this.name = name;
         this.logoUrl = logoUrl;
@@ -29,9 +32,10 @@ public class HotelDTO {
         this.ownerId = ownerId;
         this.website = website;
         this.description = description;
+        this.planId = planId;
     }
 
-    public Hotel toEntity(User owner) {
+    public Hotel toEntity(User owner, Plan plan) {
         Hotel hotel = new Hotel();
         hotel.setId(this.id);
         hotel.setName(this.name);
@@ -42,8 +46,10 @@ public class HotelDTO {
         hotel.setContactPhone(this.contactPhone);
         hotel.setWebsite(this.website);
         hotel.setDescription(this.description);
+        hotel.setPlan(plan);
         hotel.setOwner(owner);
         return hotel;
+
     }
 
     // Getters and Setters (generate manually if preferred)
@@ -77,4 +83,12 @@ public class HotelDTO {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public Integer getPlanId() {
+        return planId;
+    }
+
+    public void setPlanId(Integer planId) {
+        this.planId = planId;
+    }
 }

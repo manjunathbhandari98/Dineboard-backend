@@ -57,7 +57,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/subscribe")
-    public UserDTO subscribeToPlan(@PathVariable Long userId, @RequestParam Long planId) {
+    public UserDTO subscribeToPlan(@PathVariable Long userId, @RequestParam Integer planId) {
         return userService.updateUserPlan(userId, planId);
     }
 

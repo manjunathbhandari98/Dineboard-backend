@@ -11,7 +11,7 @@ public class Plan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String name;
 
@@ -23,6 +23,8 @@ public class Plan {
 
     private boolean highlighted;
 
+    private Integer allowedMenus;
+
     @ElementCollection
     @CollectionTable(name = "plan_features", joinColumns = @JoinColumn(name = "plan_id"))
     @Column(name = "feature")
@@ -30,13 +32,14 @@ public class Plan {
 
     public Plan() {}
 
-    public Plan(Long id, String name, String description, double price, boolean allowsWhiteLabeling, boolean highlighted, List<String> features) {
+    public Plan(Integer id, String name, String description, double price, boolean allowsWhiteLabeling, boolean highlighted, Integer allowedMenus, List<String> features) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.allowsWhiteLabeling = allowsWhiteLabeling;
         this.highlighted = highlighted;
+        this.allowedMenus = allowedMenus;
         this.features = features;
     }
 
@@ -48,17 +51,18 @@ public class Plan {
                 this.price,
                 this.allowsWhiteLabeling,
                 this.highlighted,
+                this.allowedMenus,
                 this.features
         );
     }
 
     // --- Getters and Setters ---
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -100,6 +104,14 @@ public class Plan {
 
     public void setHighlighted(boolean highlighted) {
         this.highlighted = highlighted;
+    }
+
+    public Integer getAllowedMenus() {
+        return allowedMenus;
+    }
+
+    public void setAllowedMenus(Integer allowedMenus) {
+        this.allowedMenus = allowedMenus;
     }
 
     public List<String> getFeatures() {

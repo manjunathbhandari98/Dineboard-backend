@@ -2,8 +2,10 @@ package com.quodex.dineboard.service;
 
 import com.quodex.dineboard.dto.HotelDTO;
 import com.quodex.dineboard.model.Hotel;
+import com.quodex.dineboard.model.Plan;
 import com.quodex.dineboard.model.User;
 import com.quodex.dineboard.repository.HotelRepository;
+import com.quodex.dineboard.repository.PlanRepository;
 import com.quodex.dineboard.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ public class HotelServiceImpl implements HotelService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PlanRepository planRepository;
+
     @Override
     public HotelDTO createHotel(HotelDTO hotelDTO, Long ownerId) {
         User owner = userRepository.findById(ownerId)
@@ -30,10 +35,15 @@ public class HotelServiceImpl implements HotelService {
             hotelDTO.setLogoUrlBytes(decodeBase64Image(hotelDTO.getLogoUrl()));
         }
 
-        Hotel hotel = hotelDTO.toEntity(owner);
+        Plan plan = null;
+        if (hotelDTO.getPlanId() != null) {
+            plan = planRepository.findById(hotelDTO.getPlanId())
+                    .orElseThrow(() -> new RuntimeException("Invalid plan ID"));
+        }
+        hotelDTO.setPlanId(1);
+        Hotel hotel = hotelDTO.toEntity(owner,plan);
         hotel.setCreatedAt(LocalDateTime.now());
         hotel.setUpdatedAt(LocalDateTime.now());
-
         return hotelRepository.save(hotel).toDTO();
     }
 

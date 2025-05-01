@@ -2,6 +2,8 @@ package com.quodex.dineboard.model;
 
 import com.quodex.dineboard.dto.MenuItemDTO;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "menu_items")
@@ -17,10 +19,12 @@ public class MenuItem {
 
     @ManyToOne
     @JoinColumn(name = "menu_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Menu menu;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category;
 // Add this field to link to Category
 
