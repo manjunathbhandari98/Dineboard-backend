@@ -15,13 +15,7 @@ public class Hotel {
 
     @Column(nullable = false)
     private String name;
-
-    @Lob
     private String logoUrl; // Base64 string (preview)
-
-    @Lob
-    private byte[] logoUrlBytes; // Binary stored image
-
     private String address;
     private String contactEmail;
     private String contactPhone;
@@ -45,7 +39,6 @@ public class Hotel {
         this.id = id;
         this.name = name;
         this.logoUrl = logoUrl;
-        this.logoUrlBytes = logoUrlBytes;
         this.address = address;
         this.contactEmail = contactEmail;
         this.contactPhone = contactPhone;
@@ -68,8 +61,6 @@ public class Hotel {
     public String getLogoUrl() { return logoUrl; }
     public void setLogoUrl(String logoUrl) { this.logoUrl = logoUrl; }
 
-    public byte[] getLogoUrlBytes() { return logoUrlBytes; }
-    public void setLogoUrlBytes(byte[] logoUrlBytes) { this.logoUrlBytes = logoUrlBytes; }
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
@@ -104,13 +95,12 @@ public class Hotel {
     }
 
     public HotelDTO toDTO() {
-        String base64Logo = this.logoUrlBytes != null ? "data:image/png;base64," + java.util.Base64.getEncoder().encodeToString(this.logoUrlBytes) : null;
+
         Integer planId = (plan != null) ? plan.getId() : null;
         return new HotelDTO(
                 this.id,
                 this.name,
-                base64Logo,
-                this.logoUrlBytes,
+                this.logoUrl,
                 this.address,
                 this.contactEmail,
                 this.contactPhone,

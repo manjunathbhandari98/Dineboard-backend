@@ -56,9 +56,5 @@ public class UserController {
         return !jwtUtil.isTokenExpired(token);
     }
 
-    @PutMapping("/{userId}/subscribe")
-    public UserDTO subscribeToPlan(@PathVariable Long userId, @RequestParam Integer planId) {
-        return userService.updateUserPlan(userId, planId);
-    }
 
 }

@@ -7,8 +7,7 @@ import com.quodex.dineboard.model.User;
 public class HotelDTO {
     private Long id;
     private String name;
-    private String logoUrl; // base64 string
-    private byte[] logoUrlBytes; // used internally, not sent to frontend
+    private String logoUrl;
     private String address;
     private String contactEmail;
     private String contactPhone;
@@ -20,12 +19,11 @@ public class HotelDTO {
 
     public HotelDTO() {}
 
-    public HotelDTO(Long id, String name, String logoUrl, byte[] logoUrlBytes, String address, String contactEmail,
+    public HotelDTO(Long id, String name, String logoUrl, String address, String contactEmail,
                     String contactPhone, Long ownerId, String website, String description, Integer planId) {
         this.id = id;
         this.name = name;
         this.logoUrl = logoUrl;
-        this.logoUrlBytes = logoUrlBytes;
         this.address = address;
         this.contactEmail = contactEmail;
         this.contactPhone = contactPhone;
@@ -40,7 +38,6 @@ public class HotelDTO {
         hotel.setId(this.id);
         hotel.setName(this.name);
         hotel.setLogoUrl(this.logoUrl);
-        hotel.setLogoUrlBytes(this.logoUrlBytes);
         hotel.setAddress(this.address);
         hotel.setContactEmail(this.contactEmail);
         hotel.setContactPhone(this.contactPhone);
@@ -63,8 +60,6 @@ public class HotelDTO {
     public String getLogoUrl() { return logoUrl; }
     public void setLogoUrl(String logoUrl) { this.logoUrl = logoUrl; }
 
-    public byte[] getLogoUrlBytes() { return logoUrlBytes; }
-    public void setLogoUrlBytes(byte[] logoUrlBytes) { this.logoUrlBytes = logoUrlBytes; }
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }

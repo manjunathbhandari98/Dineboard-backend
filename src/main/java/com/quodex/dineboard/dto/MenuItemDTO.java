@@ -10,9 +10,10 @@ public class MenuItemDTO {
     private Long categoryId;  // Add categoryId to include category information
 
     private String itemImage;
-    private byte[] itemImageBytes;
 
-    public MenuItemDTO(Long id, String name, String description, double price, String menuId, Long categoryId, String itemImage, byte[] itemImageBytes) {
+    public MenuItemDTO(){}
+
+    public MenuItemDTO(Long id, String name, String description, double price, String menuId, Long categoryId, String itemImage) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -20,7 +21,6 @@ public class MenuItemDTO {
         this.menuId = menuId;
         this.categoryId = categoryId;
         this.itemImage = itemImage;
-        this.itemImageBytes = itemImageBytes;
     }
 
     // --- Getters and Setters ---
@@ -81,11 +81,4 @@ public class MenuItemDTO {
         this.itemImage = itemImage;
     }
 
-    public byte[] getItemImageBytes() {
-        return itemImageBytes;
-    }
-
-    public void setItemImageBytes(byte[] itemImageBytes) {
-        this.itemImageBytes = itemImageBytes;
-    }
 }

@@ -1,10 +1,13 @@
 package com.quodex.dineboard.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quodex.dineboard.dto.MenuItemDTO;
 import com.quodex.dineboard.service.MenuItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,8 +19,21 @@ public class MenuItemController {
     private MenuItemService menuItemService;
 
     @PostMapping
-    public ResponseEntity<MenuItemDTO> createMenuItem(@RequestBody MenuItemDTO menuItemDTO) {
-        return ResponseEntity.ok(menuItemService.createMenuItem(menuItemDTO));
+    public MenuItemDTO createMenuItem(
+            @RequestPart("menuItem") String menuItem,
+            @RequestPart(value = "image", required = false) MultipartFile file) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        MenuItemDTO menuItemDTO;
+        try{
+            // Convert JSON string into MenuItemDTO
+            menuItemDTO = objectMapper.readValue(menuItem, MenuItemDTO.class);
+
+            // Pass both menuItem and image to service layer
+            return menuItemService.createMenuItem(menuItemDTO, file);
+        }
+        catch (RuntimeException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/{id}")
@@ -41,8 +57,22 @@ public class MenuItemController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MenuItemDTO> updateMenuItem(@PathVariable Long id, @RequestBody MenuItemDTO menuItemDTO) {
-        return ResponseEntity.ok(menuItemService.updateMenuItem(id, menuItemDTO));
+    public MenuItemDTO updateMenuItem(
+            @PathVariable Long id,
+            @RequestPart("menuItem") String menuItem,
+            @RequestPart(value = "image", required = false) MultipartFile file) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        MenuItemDTO menuItemDTO;
+        try{
+            // Convert JSON string into MenuItemDTO
+            menuItemDTO = objectMapper.readValue(menuItem, MenuItemDTO.class);
+
+            // Pass both menuItem and image to service layer
+            return menuItemService.updateMenuItem(id, menuItemDTO,                           file);
+        }
+        catch (RuntimeException | JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DeleteMapping("/{id}")

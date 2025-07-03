@@ -9,8 +9,8 @@ import com.quodex.dineboard.repository.MenuItemRepository;
 import com.quodex.dineboard.repository.MenuRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,19 +26,20 @@ public class MenuItemServiceImpl implements MenuItemService{
     @Autowired
     private CategoryRepository categoryRepository;
 
-    private byte[] decodeBase64Image(String base64) {
-        if (base64.contains(",")) {
-            base64 = base64.substring(base64.indexOf(",") + 1);
-        }
-        return Base64.getDecoder().decode(base64);
-    }
+    @Autowired
+    private FileUploadService fileUploadService;
 
-    public MenuItemDTO createMenuItem(MenuItemDTO dto) {
+    public MenuItemDTO createMenuItem(MenuItemDTO dto, MultipartFile file) {
         Menu menu = menuRepository.findById(dto.getMenuId())
                 .orElseThrow(() -> new RuntimeException("Menu not found"));
 
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        if (file != null && !file.isEmpty()) {
+            String imgUrl = fileUploadService.uploadFile(file);
+            dto.setItemImage(imgUrl); // ✅ Upload and store URL in DTO
+        }
 
         MenuItem item = new MenuItem();
         item.setName(dto.getName());
@@ -46,13 +47,13 @@ public class MenuItemServiceImpl implements MenuItemService{
         item.setPrice(dto.getPrice());
         item.setMenu(menu);
         item.setCategory(category);
-        if (dto.getItemImage() != null && !dto.getItemImage().isEmpty()) {
-            byte[] decodedBytes = decodeBase64Image(dto.getItemImage());
-            item.setItemImage(dto.getItemImage()); // Optional: if you're storing raw Base64 too
-            item.setItemImageBytes(decodedBytes);  // This is the important part
-        }
+
+        // ✅ Fix: Set the uploaded image URL to entity before saving
+        item.setItemImage(dto.getItemImage());
+
         return menuItemRepository.save(item).toDTO();
     }
+
 
     public MenuItemDTO getMenuItemById(Long id) {
         return menuItemRepository.findById(id)
@@ -72,7 +73,7 @@ public class MenuItemServiceImpl implements MenuItemService{
                 .collect(Collectors.toList());
     }
 
-    public MenuItemDTO updateMenuItem(Long id, MenuItemDTO dto) {
+    public MenuItemDTO updateMenuItem(Long id, MenuItemDTO dto, MultipartFile file) {
         MenuItem item = menuItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Menu Item not found"));
 
@@ -92,10 +93,9 @@ public class MenuItemServiceImpl implements MenuItemService{
             item.setCategory(newCategory);
         }
 
-        if (dto.getItemImage() != null && !dto.getItemImage().isEmpty()) {
-            byte[] decodedBytes = decodeBase64Image(dto.getItemImage());
-            item.setItemImage(dto.getItemImage()); // Optional: if you're storing raw Base64 too
-            item.setItemImageBytes(decodedBytes);  // This is the important part
+        if (file != null && !file.isEmpty()) {
+            String imgUrl = fileUploadService.uploadFile(file);
+            item.setItemImage(imgUrl);
         }
 
         return menuItemRepository.save(item).toDTO();
@@ -111,7 +111,5 @@ public class MenuItemServiceImpl implements MenuItemService{
                 .map(MenuItem::toDTO)
                 .collect(Collectors.toList());
     }
-
-
 
 }

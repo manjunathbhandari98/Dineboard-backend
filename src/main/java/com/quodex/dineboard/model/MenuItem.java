@@ -26,17 +26,12 @@ public class MenuItem {
     @JoinColumn(name = "category_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category;
-// Add this field to link to Category
+    private String itemImage;
 
-    @Lob
-    private String itemImage; // Base64 string (preview)
-
-    @Lob
-    private byte[] itemImageBytes; // Binary stored image
 
     public MenuItem() {}
 
-    public MenuItem(Long id, String name, String description, double price, Menu menu, Category category, String itemImage, byte[] itemImageBytes) {
+    public MenuItem(Long id, String name, String description, double price, Menu menu, Category category, String itemImage) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -44,11 +39,9 @@ public class MenuItem {
         this.menu = menu;
         this.category = category;
         this.itemImage = itemImage;
-        this.itemImageBytes = itemImageBytes;
     }
 
     public MenuItemDTO toDTO() {
-        String base64Logo = this.itemImageBytes != null ? "data:image/png;base64," + java.util.Base64.getEncoder().encodeToString(this.itemImageBytes) : null;
 
         return new MenuItemDTO(
                 this.id,
@@ -57,8 +50,7 @@ public class MenuItem {
                 this.price,
                 this.menu != null ? this.menu.getId() : null,
                 this.category != null ? this.category.getId() : null , // Add category info to DTO
-                base64Logo,
-                itemImageBytes
+                this.itemImage
         );
     }
 
@@ -120,11 +112,4 @@ public class MenuItem {
         this.itemImage = itemImage;
     }
 
-    public byte[] getItemImageBytes() {
-        return itemImageBytes;
-    }
-
-    public void setItemImageBytes(byte[] itemImageBytes) {
-        this.itemImageBytes = itemImageBytes;
-    }
 }

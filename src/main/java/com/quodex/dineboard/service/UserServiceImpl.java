@@ -1,7 +1,6 @@
 package com.quodex.dineboard.service;
 
 import com.quodex.dineboard.dto.UserDTO;
-import com.quodex.dineboard.model.Plan;
 import com.quodex.dineboard.model.User;
 import com.quodex.dineboard.repository.PlanRepository;
 import com.quodex.dineboard.repository.UserRepository;
@@ -59,16 +58,5 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    @Override
-    public UserDTO updateUserPlan(Long userId, Integer planId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Plan plan = planRepository.findById(planId)
-                .orElseThrow(() -> new RuntimeException("Plan not found"));
-
-        user.setUpdatedAt(LocalDateTime.now());
-
-        return userRepository.save(user).toDTO();
-    }
 }
