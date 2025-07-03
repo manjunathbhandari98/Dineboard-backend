@@ -4,6 +4,7 @@ import com.quodex.dineboard.service.RazorpayService;
 import org.apache.commons.codec.binary.Hex;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,10 @@ public class PaymentController {
     @Autowired
     private RazorpayService razorpayService;
 
+    @Value("${razorpay.key_secret}")
+    private String keySecret;
+
+
     @PostMapping("/create-order")
     public ResponseEntity<?> createOrder(@RequestBody Map<String, Integer> data) {
         try {
@@ -31,14 +36,21 @@ public class PaymentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Payment Failed"));
         }
     }
+
+    @PostMapping("/verify-test")
+    public boolean verifyTest(){
+        return true;
+    }
+    
+
     @PostMapping("/verify")
     public ResponseEntity<String> verifyPayment(@RequestBody Map<String, String> payload) {
         String orderId = payload.get("razorpay_order_id");
         String paymentId = payload.get("razorpay_payment_id");
         String signature = payload.get("razorpay_signature");
 
-        String secret = "YOUR_KEY_SECRET";
-        String generatedSignature = HmacSHA256(orderId + "|" + paymentId, secret);
+        String generatedSignature = HmacSHA256(orderId + "|" + paymentId, keySecret);
+
 
         if (generatedSignature.equals(signature)) {
             return ResponseEntity.ok("Payment verified");
