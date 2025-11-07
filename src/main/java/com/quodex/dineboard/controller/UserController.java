@@ -1,37 +1,36 @@
 package com.quodex.dineboard.controller;
 
-import com.quodex.dineboard.dto.UserDTO;
+import com.quodex.dineboard.dto.request.LoginRequest;
+import com.quodex.dineboard.dto.response.LoginResponse;
+import com.quodex.dineboard.dto.request.RegisterRequest;
+import com.quodex.dineboard.dto.request.UserRequest;
 import com.quodex.dineboard.jwt.JwtUtil;
 import com.quodex.dineboard.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public UserDTO register(@RequestBody UserDTO userDTO) {
-        return userService.registerUser(userDTO);  // Register the user
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+        return ResponseEntity.ok( userService.registerUser(request));  // Register the user
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody UserDTO userDTO) {
-        UserDTO loggedInUser = userService.loginUser(userDTO.getEmail(), userDTO.getPassword());
-        return jwtUtil.generateToken(loggedInUser.getEmail());
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(userService.loginUser(request));
     }
 
-
-
     @GetMapping("/profile")
-    public UserDTO profile(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<UserRequest> profile(@RequestHeader("Authorization") String token) {
         // Remove the "Bearer " prefix from the token if it exists
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
@@ -41,7 +40,7 @@ public class UserController {
         String email = jwtUtil.extractUsername(token);
 
         // Return user profile based on the extracted email
-        return userService.getUserByEmail(email);
+        return ResponseEntity.ok( userService.getUserByEmail(email));
     }
 
     @GetMapping("/validate")

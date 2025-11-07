@@ -2,10 +2,10 @@ package com.quodex.dineboard.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.quodex.dineboard.dto.HotelDTO;
+import com.quodex.dineboard.dto.response.HotelResponse;
+import com.quodex.dineboard.dto.request.HotelRequest;
 import com.quodex.dineboard.service.HotelService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,76 +20,81 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HotelController {
 
-    @Autowired
-    private HotelService hotelService;
+        private final HotelService hotelService;
 
+        //  Create a new hotel
+        @PostMapping("/{ownerId}")
+        public ResponseEntity<HotelResponse> createHotel(
+                @PathVariable String ownerId,
+                @RequestPart("hotel") String hotelJson,
+                @RequestPart(value = "image", required = false) MultipartFile file
+        ) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                HotelRequest request = objectMapper.readValue(hotelJson, HotelRequest.class);
 
-    // Now takes ownerId instead of User
-    @PostMapping("/{ownerId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public HotelDTO createHotel(
-            @PathVariable Long ownerId,
-            @RequestPart("hotel") String hotelString,
-            @RequestPart(value = "image", required = false) MultipartFile file
-    ) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        HotelDTO hotelDTO;
+                HotelResponse response = hotelService.createHotel(request, ownerId, file);
+                return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
-        try {
-            // Convert JSON string into HotelDTO
-            hotelDTO = objectMapper.readValue(hotelString, HotelDTO.class);
-
-            // Pass both hotel and image to service layer
-            return hotelService.createHotel(hotelDTO, ownerId, file);
-
-        } catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            } catch (JsonProcessingException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid hotel JSON: " + e.getMessage());
+            }
         }
-    }
 
-
-    @GetMapping("/{id}")
-    public ResponseEntity<HotelDTO> getHotel(@PathVariable Long id) {
-        return ResponseEntity.ok(hotelService.getHotelById(id));
-    }
-
-    @GetMapping("/by-user/{userId}")
-    public ResponseEntity<HotelDTO> getHotelByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(hotelService.getHotelByUserId(userId));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<HotelDTO>> getAllHotels() {
-        return ResponseEntity.ok(hotelService.getAllHotels());
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<HotelDTO> updateHotel(
-            @PathVariable Long id,
-            @RequestPart("hotel") String hotelString,
-            @RequestPart(value = "image", required = false) MultipartFile file
-    ) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        HotelDTO hotelDTO;
-
-        try {
-            hotelDTO = objectMapper.readValue(hotelString, HotelDTO.class);
-            return ResponseEntity.ok(hotelService.updateHotel(id, hotelDTO, file));
-        } catch (JsonProcessingException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        // Get hotel by ID
+        @GetMapping("/{id}")
+        public ResponseEntity<HotelResponse> getHotel(@PathVariable String id) {
+            HotelResponse response = hotelService.getHotelById(id);
+            return ResponseEntity.ok(response);
         }
-    }
 
+        //  Get hotel by User ID
+        @GetMapping("/by-user/{userId}")
+        public ResponseEntity<HotelResponse> getHotelByUser(@PathVariable String userId) {
+            HotelResponse response = hotelService.getHotelByUserId(userId);
+            return ResponseEntity.ok(response);
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteHotel(@PathVariable Long id) {
-        hotelService.deleteHotel(id);
-        return ResponseEntity.noContent().build();
-    }
+        //  Get all hotels
+        @GetMapping
+        public ResponseEntity<List<HotelResponse>> getAllHotels() {
+            List<HotelResponse> hotels = hotelService.getAllHotels();
+            return ResponseEntity.ok(hotels);
+        }
 
+        //  Update hotel
+        @PutMapping("/{id}")
+        public ResponseEntity<HotelResponse> updateHotel(
+                @PathVariable String id,
+                @RequestPart("hotel") String hotelJson,
+                @RequestPart(value = "image", required = false) MultipartFile file
+        ) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                HotelRequest request = objectMapper.readValue(hotelJson, HotelRequest.class);
 
-    @PutMapping("/{id}/subscribe")
-    public HotelDTO subscribeToPlan(@PathVariable Long id, @RequestParam Integer planId) {
-        return hotelService.updatePlan(id, planId);
-    }
+                HotelResponse updated = hotelService.updateHotel(id, request, file);
+                return ResponseEntity.ok(updated);
+
+            } catch (JsonProcessingException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid hotel JSON: " + e.getMessage());
+            }
+        }
+
+        // Delete hotel
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> deleteHotel(@PathVariable String id) {
+            hotelService.deleteHotel(id);
+            return ResponseEntity.noContent().build();
+        }
+
+        // Subscribe hotel to a plan
+        @PutMapping("/{id}/subscribe")
+        public ResponseEntity<HotelResponse> subscribeToPlan(
+                @PathVariable String id,
+                @RequestParam String planId
+        ) {
+            HotelResponse response = hotelService.updatePlan(id, planId);
+            return ResponseEntity.ok(response);
+        }
 }

@@ -1,13 +1,14 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.PlanDTO;
+import com.quodex.dineboard.dto.request.PlanRequest;
+import com.quodex.dineboard.dto.response.PlanResponse;
 
 import java.util.List;
 
 public interface PlanService {
-    List<PlanDTO> getAllPlans();
-    PlanDTO getPlanById(Integer id);
-    PlanDTO createPlan(PlanDTO planDTO);
-    PlanDTO updatePlan(Integer id, PlanDTO planDTO);
-    void deletePlan(Integer id);
+    List<PlanResponse> getAllPlans();
+    PlanResponse getPlanById(String id);
+    PlanResponse createPlan(PlanRequest planRequest);
+    PlanResponse updatePlan(String id, PlanRequest planRequest);
+    void deletePlan(String id);
 }

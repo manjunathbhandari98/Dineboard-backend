@@ -1,10 +1,13 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.UserDTO;
+import com.quodex.dineboard.dto.request.LoginRequest;
+import com.quodex.dineboard.dto.response.LoginResponse;
+import com.quodex.dineboard.dto.request.RegisterRequest;
+import com.quodex.dineboard.dto.request.UserRequest;
 
 public interface UserService {
-    UserDTO registerUser(UserDTO userDTO);
-    UserDTO loginUser(String email, String password);
-    UserDTO getUserByEmail(String email);
+    String registerUser(RegisterRequest request);
+    LoginResponse loginUser(LoginRequest request);
+    UserRequest getUserByEmail(String email);
 
 }

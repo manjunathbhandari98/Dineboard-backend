@@ -1,57 +1,44 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.PlanDTO;
+import com.quodex.dineboard.mapper.PlanMapper;
+import com.quodex.dineboard.dto.request.PlanRequest;
+import com.quodex.dineboard.dto.response.PlanResponse;
 import com.quodex.dineboard.model.Plan;
 import com.quodex.dineboard.repository.PlanRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PlanServiceImpl implements PlanService {
 
-    @Autowired
-    private PlanRepository planRepository;
-
-    @Autowired
-    public PlanServiceImpl(PlanRepository planRepository) {
-        this.planRepository = planRepository;
-    }
+    private final PlanRepository planRepository;
 
     @Override
-    public List<PlanDTO> getAllPlans() {
+    public List<PlanResponse> getAllPlans() {
         return planRepository.findAll()
                 .stream()
-                .map(Plan::toDTO)
-                .collect(Collectors.toList());
+                .map(PlanMapper::toResponse)
+                .toList();
     }
 
     @Override
-    public PlanDTO getPlanById(Integer id) {
+    public PlanResponse getPlanById(String id) {
         Plan plan = planRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Plan not found with id: " + id));
-        return plan.toDTO();
+        return PlanMapper.toResponse(plan);
     }
 
     @Override
-    public PlanDTO createPlan(PlanDTO dto) {
-        Plan plan = new Plan(
-                null,
-                dto.getName(),
-                dto.getDescription(),
-                dto.getPrice(),
-                dto.isAllowsWhiteLabeling(),
-                dto.isHighlighted(),
-                dto.getAllowedMenus(),
-                dto.getFeatures()
-        );
-        return planRepository.save(plan).toDTO();
+    public PlanResponse createPlan(PlanRequest dto) {
+        Plan plan = PlanMapper.toEntity(dto);
+        return PlanMapper.toResponse(planRepository.save(plan));
     }
 
     @Override
-    public PlanDTO updatePlan(Integer id, PlanDTO dto) {
+    public PlanResponse updatePlan(String id, PlanRequest dto) {
         Plan plan = planRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Plan not found with id: " + id));
 
@@ -63,11 +50,12 @@ public class PlanServiceImpl implements PlanService {
         plan.setHighlighted(dto.isHighlighted());
         plan.setFeatures(dto.getFeatures());
 
-        return planRepository.save(plan).toDTO();
+        plan = planRepository.save(plan);
+        return PlanMapper.toResponse(plan);
     }
 
     @Override
-    public void deletePlan(Integer id) {
+    public void deletePlan(String id) {
         if (!planRepository.existsById(id)) {
             throw new RuntimeException("Plan not found with id: " + id);
         }

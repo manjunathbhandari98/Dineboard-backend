@@ -1,23 +1,24 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.MenuDTO;
+import com.quodex.dineboard.dto.request.MenuRequest;
+import com.quodex.dineboard.dto.response.MenuResponse;
 import com.quodex.dineboard.exception.DineBoardException;
 
 import java.util.List;
 
 public interface MenuService {
 
-    MenuDTO createMenu(MenuDTO menuDTO) throws DineBoardException;
+    MenuResponse createMenu(MenuRequest request) throws DineBoardException;
 
-    MenuDTO getMenuById(String id);
+    MenuResponse getMenuById(String id);
 
-    List<MenuDTO> getAllMenus();
+    List<MenuResponse> getAllMenus();
 
-    MenuDTO updateMenu(String id, MenuDTO menuDTO);
+    MenuResponse updateMenu(String id, MenuRequest request);
 
     void deleteMenu(String id);
 
-    List<MenuDTO> getMenusByHotel(Long hotelId);
+    List<MenuResponse> getMenusByHotel(String hotelId);
 
     void trackMenuView(String id);
 }

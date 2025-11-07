@@ -1,17 +1,18 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.CategoryDTO;
+import com.quodex.dineboard.dto.request.CategoryRequest;
+import com.quodex.dineboard.dto.response.CategoryResponse;
 
 import java.util.List;
 
 public interface CategoryService {
-    List<CategoryDTO> getAllCategories(String menuId);
+    List<CategoryResponse> getAllCategories(String menuId);
 
-    CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO);
+    CategoryResponse updateCategory(String id, CategoryRequest request);
 
-    CategoryDTO getCategoryById(Long id);
+    CategoryResponse getCategoryById(String id);
 
-    void deleteById(Long id);
+    void deleteById(String id);
 
-    CategoryDTO createCategory(CategoryDTO categoryDTO);
+    CategoryResponse createCategory(CategoryRequest request);
 }

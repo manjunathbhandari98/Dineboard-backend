@@ -1,24 +1,31 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.HotelDTO;
+import com.quodex.dineboard.dto.response.HotelResponse;
+import com.quodex.dineboard.dto.request.HotelRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
 public interface HotelService {
 
-    // Change: Accept ownerId (Long) instead of User, to fetch User in the implementation
-    HotelDTO createHotel(HotelDTO hotelDTO, Long ownerId, MultipartFile file);
+    // Create a new hotel
+    HotelResponse createHotel(HotelRequest request, String ownerId, MultipartFile file);
 
-    HotelDTO getHotelById(Long id);
+    // Get hotel by ID
+    HotelResponse getHotelById(String id);
 
-    List<HotelDTO> getAllHotels();
+    // Get all hotels
+    List<HotelResponse> getAllHotels();
 
-    HotelDTO updateHotel(Long id, HotelDTO hotelDTO, MultipartFile file);
+    // Update existing hotel
+    HotelResponse updateHotel(String id, HotelRequest request, MultipartFile file);
 
-    void deleteHotel(Long id);
+    // Delete hotel
+    void deleteHotel(String id);
 
-    HotelDTO getHotelByUserId(Long userId);
+    // Get hotel by user ID
+    HotelResponse getHotelByUserId(String userId);
 
-    HotelDTO updatePlan(Long id, Integer planId);
+    // Subscribe hotel to a plan
+    HotelResponse updatePlan(String id, String planId);
 }
+

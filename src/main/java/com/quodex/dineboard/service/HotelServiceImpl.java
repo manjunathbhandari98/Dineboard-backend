@@ -1,13 +1,15 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.HotelDTO;
+import com.quodex.dineboard.mapper.HotelMapper;
+import com.quodex.dineboard.dto.response.HotelResponse;
+import com.quodex.dineboard.dto.request.HotelRequest;
 import com.quodex.dineboard.model.Hotel;
 import com.quodex.dineboard.model.Plan;
 import com.quodex.dineboard.model.User;
 import com.quodex.dineboard.repository.HotelRepository;
 import com.quodex.dineboard.repository.PlanRepository;
 import com.quodex.dineboard.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,103 +17,121 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class HotelServiceImpl implements HotelService {
 
-    @Autowired
-    private HotelRepository hotelRepository;
+    private final HotelRepository hotelRepository;
+    private final UserRepository userRepository;
+    private final PlanRepository planRepository;
+    private final FileUploadService fileUploadService;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PlanRepository planRepository;
-
-    @Autowired
-    private FileUploadService fileUploadService;
-
+    //  Create new hotel
     @Override
-    public HotelDTO createHotel(HotelDTO hotelDTO, Long ownerId, MultipartFile file) {
-
-        // Step 1: Fetch owner by ID or throw error
+    public HotelResponse createHotel(HotelRequest request, String ownerId, MultipartFile file) {
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Step 2: Upload logo image to Cloudinary and set URL
-        if (file != null && !file.isEmpty()) {
-            String imgUrl = fileUploadService.uploadFile(file);
-            hotelDTO.setLogoUrl(imgUrl); // Set uploaded image URL to DTO
+        Plan plan = null;
+        if (request.getPlanId() != null) {
+            plan = planRepository.findById(request.getPlanId())
+                    .orElseThrow(() -> new RuntimeException("Plan not found"));
         }
 
+        // Upload logo image (optional)
+        if (file != null && !file.isEmpty()) {
+            String imgUrl = fileUploadService.uploadFile(file);
+            request.setLogoUrl(imgUrl);
+        }
 
-        // Step 3: Convert DTO to Entity and set audit fields
-        Hotel hotel = hotelDTO.toEntity(owner, null);
+        // Map and set timestamps
+        Hotel hotel = HotelMapper.toEntity(request, owner, plan);
         hotel.setCreatedAt(LocalDateTime.now());
         hotel.setUpdatedAt(LocalDateTime.now());
 
-        // Step 4: Save to DB and return as DTO
-        return hotelRepository.save(hotel).toDTO();
+        hotel = hotelRepository.save(hotel);
+        return HotelMapper.toResponse(hotel);
     }
 
-
+    //  Get hotel by ID
     @Override
-    public HotelDTO getHotelById(Long id) {
-        return hotelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Hotel not found"))
-                .toDTO();
+    public HotelResponse getHotelById(String id) {
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Hotel not found"));
+        return HotelMapper.toResponse(hotel);
     }
 
+    //  Get all hotels
     @Override
-    public List<HotelDTO> getAllHotels() {
-        return hotelRepository.findAll().stream()
-                .map(Hotel::toDTO)
+    public List<HotelResponse> getAllHotels() {
+        return hotelRepository.findAll()
+                .stream()
+                .map(HotelMapper::toResponse)
                 .toList();
     }
 
+    //  Update existing hotel
     @Override
-    public HotelDTO updateHotel(Long id, HotelDTO hotelDTO, MultipartFile file) {
+    public HotelResponse updateHotel(String id, HotelRequest request, MultipartFile file) {
         Hotel hotel = hotelRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Hotel not found"));
 
-        hotel.setName(hotelDTO.getName());
-        hotel.setAddress(hotelDTO.getAddress());
-        hotel.setContactEmail(hotelDTO.getContactEmail());
-        hotel.setContactPhone(hotelDTO.getContactPhone());
-        hotel.setWebsite(hotelDTO.getWebsite());
-        hotel.setDescription(hotelDTO.getDescription());
+        User owner = userRepository.findById(request.getOwnerId())
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
 
-        // ✅ Upload and update image if provided
+        Plan plan = null;
+        if (request.getPlanId() != null) {
+            plan = planRepository.findById(request.getPlanId())
+                    .orElseThrow(() -> new RuntimeException("Plan not found"));
+        }
+
+        hotel.setName(request.getName());
+        hotel.setAddress(request.getAddress());
+        hotel.setContactEmail(request.getContactEmail());
+        hotel.setContactPhone(request.getContactPhone());
+        hotel.setWebsite(request.getWebsite());
+        hotel.setDescription(request.getDescription());
+        hotel.setOwner(owner);
+        hotel.setPlan(plan);
+
+        // Upload and update image (optional)
         if (file != null && !file.isEmpty()) {
             String imgUrl = fileUploadService.uploadFile(file);
             hotel.setLogoUrl(imgUrl);
+        } else if (request.getLogoUrl() != null) {
+            hotel.setLogoUrl(request.getLogoUrl());
         }
 
         hotel.setUpdatedAt(LocalDateTime.now());
-
-        return hotelRepository.save(hotel).toDTO();
+        hotel = hotelRepository.save(hotel);
+        return HotelMapper.toResponse(hotel);
     }
 
-
+    //  Delete hotel
     @Override
-    public void deleteHotel(Long id) {
+    public void deleteHotel(String id) {
         hotelRepository.deleteById(id);
     }
 
+    //  Get hotel by user
     @Override
-    public HotelDTO getHotelByUserId(Long userId) {
-        Hotel hotel = (Hotel) hotelRepository.findByOwnerId(userId)
+    public HotelResponse getHotelByUserId(String userId) {
+        Hotel hotel = hotelRepository.findByOwnerId(userId)
                 .orElseThrow(() -> new RuntimeException("Hotel not found for user ID: " + userId));
-        return hotel.toDTO();
+        return HotelMapper.toResponse(hotel);
     }
 
+    //  Update plan
     @Override
-    public HotelDTO updatePlan(Long id, Integer planId) {
+    public HotelResponse updatePlan(String id, String planId) {
         Hotel hotel = hotelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Hotel Not Found"));
-        Plan plan = planRepository.findById(planId)
-                .orElseThrow(() -> new RuntimeException("Plan Not Found"));
-        hotel.setUpdatedAt(LocalDateTime.now());
-        hotel.setPlan(plan);
-        return hotelRepository.save(hotel).toDTO();
-    }
+                .orElseThrow(() -> new RuntimeException("Hotel not found"));
 
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new RuntimeException("Plan not found"));
+
+        hotel.setPlan(plan);
+        hotel.setUpdatedAt(LocalDateTime.now());
+        hotel = hotelRepository.save(hotel);
+        return HotelMapper.toResponse(hotel);
+    }
 }

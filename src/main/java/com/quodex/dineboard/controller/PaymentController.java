@@ -1,6 +1,7 @@
 package com.quodex.dineboard.controller;
 
 import com.quodex.dineboard.service.RazorpayService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/payment")
+@RequiredArgsConstructor
 public class PaymentController {
-    @Autowired
-    private RazorpayService razorpayService;
+    private final RazorpayService razorpayService;
 
     @Value("${razorpay.key_secret}")
     private String keySecret;

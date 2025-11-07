@@ -1,35 +1,32 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.MenuItemDTO;
+import com.quodex.dineboard.mapper.MenuItemMapper;
+import com.quodex.dineboard.dto.request.MenuItemRequest;
+import com.quodex.dineboard.dto.response.MenuItemResponse;
 import com.quodex.dineboard.model.Category;
 import com.quodex.dineboard.model.Menu;
 import com.quodex.dineboard.model.MenuItem;
 import com.quodex.dineboard.repository.CategoryRepository;
 import com.quodex.dineboard.repository.MenuItemRepository;
 import com.quodex.dineboard.repository.MenuRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-public class MenuItemServiceImpl implements MenuItemService{
+@RequiredArgsConstructor
+public class MenuItemServiceImpl implements MenuItemService {
 
-    @Autowired
-    private MenuItemRepository menuItemRepository;
+    private final MenuItemRepository menuItemRepository;
+    private final MenuRepository menuRepository;
+    private final CategoryRepository categoryRepository;
+    private final FileUploadService fileUploadService;
 
-    @Autowired
-    private MenuRepository menuRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private FileUploadService fileUploadService;
-
-    public MenuItemDTO createMenuItem(MenuItemDTO dto, MultipartFile file) {
+    // ✅ Create new menu item
+    @Override
+    public MenuItemResponse createMenuItem(MenuItemRequest dto, MultipartFile file) {
         Menu menu = menuRepository.findById(dto.getMenuId())
                 .orElseThrow(() -> new RuntimeException("Menu not found"));
 
@@ -38,78 +35,94 @@ public class MenuItemServiceImpl implements MenuItemService{
 
         if (file != null && !file.isEmpty()) {
             String imgUrl = fileUploadService.uploadFile(file);
-            dto.setItemImage(imgUrl); // ✅ Upload and store URL in DTO
+            dto.setItemImage(imgUrl);
         }
 
-        MenuItem item = new MenuItem();
-        item.setName(dto.getName());
-        item.setDescription(dto.getDescription());
-        item.setPrice(dto.getPrice());
-        item.setMenu(menu);
-        item.setCategory(category);
+        MenuItem item = MenuItemMapper.toEntity(dto, menu, category);
+        item = menuItemRepository.save(item);
 
-        // ✅ Fix: Set the uploaded image URL to entity before saving
-        item.setItemImage(dto.getItemImage());
+        return MenuItemMapper.toResponse(item);
 
-        return menuItemRepository.save(item).toDTO();
     }
 
-
-    public MenuItemDTO getMenuItemById(Long id) {
-        return menuItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Menu Item not found"))
-                .toDTO();
+    // ✅ Get single menu item by ID
+    @Override
+    public MenuItemResponse getMenuItemById(String id) {
+        MenuItem menuItem = menuItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Menu item not found"));
+        return MenuItemMapper.toResponse(menuItem);
     }
 
-    public List<MenuItemDTO> getAllMenuItems() {
-        return menuItemRepository.findAll().stream()
-                .map(MenuItem::toDTO)
-                .collect(Collectors.toList());
+    // ✅ Get all menu items
+    @Override
+    public List<MenuItemResponse> getAllMenuItems() {
+        return menuItemRepository.findAll()
+                .stream()
+                .map(MenuItemMapper::toResponse)
+                .toList();
     }
 
-    public List<MenuItemDTO> getMenuItemsByMenuAndCategoryId(String menuId, Long categoryId) {
-        return menuItemRepository.findByMenuIdAndCategoryId(menuId, categoryId).stream()
-                .map(MenuItem::toDTO)
-                .collect(Collectors.toList());
+    // ✅ Get menu items by both menu & category
+    @Override
+    public List<MenuItemResponse> getMenuItemsByMenuAndCategoryId(String menuId, String categoryId) {
+        return menuItemRepository.findByMenuIdAndCategoryId(menuId, categoryId)
+                .stream()
+                .map(MenuItemMapper::toResponse)
+                .toList();
     }
 
-    public MenuItemDTO updateMenuItem(Long id, MenuItemDTO dto, MultipartFile file) {
+    // ✅ Update menu item
+    @Override
+    public MenuItemResponse updateMenuItem(String id, MenuItemRequest dto, MultipartFile file) {
         MenuItem item = menuItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Menu Item not found"));
+                .orElseThrow(() -> new RuntimeException("Menu item not found"));
 
+        // Basic field updates
         item.setName(dto.getName());
         item.setDescription(dto.getDescription());
         item.setPrice(dto.getPrice());
 
+        // Update menu if changed
         if (!item.getMenu().getId().equals(dto.getMenuId())) {
             Menu newMenu = menuRepository.findById(dto.getMenuId())
                     .orElseThrow(() -> new RuntimeException("Menu not found"));
             item.setMenu(newMenu);
         }
 
+        // Update category if changed
         if (!item.getCategory().getId().equals(dto.getCategoryId())) {
             Category newCategory = categoryRepository.findById(dto.getCategoryId())
                     .orElseThrow(() -> new RuntimeException("Category not found"));
             item.setCategory(newCategory);
         }
 
+        // Upload and replace image if provided
         if (file != null && !file.isEmpty()) {
             String imgUrl = fileUploadService.uploadFile(file);
             item.setItemImage(imgUrl);
+        } else if (dto.getItemImage() != null) {
+            item.setItemImage(dto.getItemImage());
         }
 
-        return menuItemRepository.save(item).toDTO();
+        item = menuItemRepository.save(item);
+        return MenuItemMapper.toResponse(item);
     }
 
-    public void deleteMenuItem(Long id) {
+    // ✅ Delete menu item
+    @Override
+    public void deleteMenuItem(String id) {
+        if (!menuItemRepository.existsById(id)) {
+            throw new RuntimeException("Menu item not found");
+        }
         menuItemRepository.deleteById(id);
     }
 
+    // ✅ Get menu items by menu ID
     @Override
-    public List<MenuItemDTO> getMenuItemsByMenuId(String menuId) {
-        return menuItemRepository.findByMenuId(menuId).stream()
-                .map(MenuItem::toDTO)
-                .collect(Collectors.toList());
+    public List<MenuItemResponse> getMenuItemsByMenuId(String menuId) {
+        return menuItemRepository.findByMenuId(menuId)
+                .stream()
+                .map(MenuItemMapper::toResponse)
+                .toList();
     }
-
 }

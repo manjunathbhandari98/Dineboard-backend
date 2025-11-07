@@ -1,8 +1,11 @@
 package com.quodex.dineboard.controller;
 
-import com.quodex.dineboard.dto.PlanDTO;
+import com.quodex.dineboard.dto.request.PlanRequest;
+import com.quodex.dineboard.dto.response.PlanResponse;
 import com.quodex.dineboard.service.PlanService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,37 +13,38 @@ import java.util.List;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/plans")
+@RequiredArgsConstructor
 public class PlanController {
 
     private final PlanService planService;
 
-    @Autowired
-    public PlanController(PlanService planService) {
-        this.planService = planService;
-    }
-
     @GetMapping
-    public List<PlanDTO> getAllPlans() {
-        return planService.getAllPlans();
+    public ResponseEntity<List<PlanResponse>> getAllPlans() {
+        List<PlanResponse> plans = planService.getAllPlans();
+        return ResponseEntity.ok(plans);
     }
 
     @GetMapping("/{id}")
-    public PlanDTO getPlanById(@PathVariable Integer id) {
-        return planService.getPlanById(id);
+    public ResponseEntity<PlanResponse> getPlanById(@PathVariable String id) {
+        PlanResponse plan = planService.getPlanById(id);
+        return ResponseEntity.ok(plan);
     }
 
     @PostMapping
-    public PlanDTO createPlan(@RequestBody PlanDTO dto) {
-        return planService.createPlan(dto);
+    public ResponseEntity<PlanResponse> createPlan(@RequestBody PlanRequest request) {
+        PlanResponse createdPlan = planService.createPlan(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdPlan);
     }
 
     @PutMapping("/{id}")
-    public PlanDTO updatePlan(@PathVariable Integer id, @RequestBody PlanDTO dto) {
-        return planService.updatePlan(id, dto);
+    public ResponseEntity<PlanResponse> updatePlan(@PathVariable String id, @RequestBody PlanRequest request) {
+        PlanResponse updatedPlan = planService.updatePlan(id, request);
+        return ResponseEntity.ok(updatedPlan);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePlan(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletePlan(@PathVariable String id) {
         planService.deletePlan(id);
+        return ResponseEntity.noContent().build();
     }
 }

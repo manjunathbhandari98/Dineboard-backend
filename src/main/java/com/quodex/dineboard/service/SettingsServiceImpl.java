@@ -1,45 +1,46 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.SettingsDTO;
+import com.quodex.dineboard.mapper.SettingMapper;
+import com.quodex.dineboard.dto.request.SettingRequest;
+import com.quodex.dineboard.dto.response.SettingResponse;
 import com.quodex.dineboard.model.Hotel;
 import com.quodex.dineboard.model.Settings;
 import com.quodex.dineboard.repository.HotelRepository;
 import com.quodex.dineboard.repository.SettingsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SettingsServiceImpl implements SettingsService {
 
-    @Autowired
-    private SettingsRepository settingsRepository;
-
-    @Autowired
-    private HotelRepository hotelRepository;
+    private final SettingsRepository settingsRepository;
+    private final HotelRepository hotelRepository;
 
     @Override
-    public SettingsDTO createOrUpdateSettings(SettingsDTO dto) {
+    public SettingResponse createOrUpdateSettings(SettingRequest dto) {
         Hotel hotel = hotelRepository.findById(dto.getHotelId())
-                .orElseThrow(() -> new RuntimeException("Hotel not found"));
+                .orElseThrow(() -> new RuntimeException("Hotel not found with id: " + dto.getHotelId()));
 
         Settings settings = settingsRepository.findByHotelId(hotel.getId())
-                .orElse(new Settings());
+                .orElse(SettingMapper.toEntity(dto, hotel));
 
-        settings.setHotel(hotel);
+        // Update fields
         settings.setEnableNotification(dto.isEnableNotification());
         settings.setDarkModeEnabled(dto.isDarkModeEnabled());
         settings.setBorderAroundQR(dto.isBorderAroundQR());
         settings.setShowHotelName(dto.isShowHotelName());
         settings.setShowDineBoardBranding(dto.isShowDineBoardBranding());
+        settings.setHotel(hotel);
 
-        return settingsRepository.save(settings).toDTO();
+        settings = settingsRepository.save(settings);
+        return SettingMapper.toResponse(settings);
     }
 
     @Override
-    public SettingsDTO getSettingsByHotel(Long hotelId) {
+    public SettingResponse getSettingsByHotel(String hotelId) {
         Settings settings = settingsRepository.findByHotelId(hotelId)
-                .orElseThrow(() -> new RuntimeException("Settings not found for hotel"));
-
-        return settings.toDTO();
+                .orElseThrow(() -> new RuntimeException("Settings not found for hotel ID: " + hotelId));
+        return SettingMapper.toResponse(settings);
     }
 }

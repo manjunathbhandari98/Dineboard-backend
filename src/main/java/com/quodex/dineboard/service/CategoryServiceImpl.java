@@ -1,6 +1,8 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.CategoryDTO;
+import com.quodex.dineboard.mapper.CategoryMapper;
+import com.quodex.dineboard.dto.request.CategoryRequest;
+import com.quodex.dineboard.dto.response.CategoryResponse;
 import com.quodex.dineboard.model.Category;
 import com.quodex.dineboard.model.Menu;
 import com.quodex.dineboard.repository.CategoryRepository;
@@ -18,39 +20,39 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private MenuRepository menuRepository;
     @Override
-    public List<CategoryDTO> getAllCategories(String menuId) {
+    public List<CategoryResponse> getAllCategories(String menuId) {
         return categoryRepository.findByMenuId(menuId)
                 .stream()
-                .map(Category::toDTO)
+                .map(CategoryMapper::toResponse)
                 .toList();
     }
 
 
     @Override
-    public CategoryDTO updateCategory(Long id, CategoryDTO categoryDTO) {
+    public CategoryResponse updateCategory(String id, CategoryRequest request) {
         Category existingCategory = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category Not Found"));
-        existingCategory.setName(categoryDTO.getName());
-        return categoryRepository.save(existingCategory).toDTO();
+        existingCategory.setName(request.getCategoryName());
+        return CategoryMapper.toResponse(categoryRepository.save(existingCategory));
     }
 
     @Override
-    public CategoryDTO getCategoryById(Long id){
-        return categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category Not Found")).toDTO();
+    public CategoryResponse getCategoryById(String id){
+        Category category =  categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category Not Found"));
+        return CategoryMapper.toResponse(category);
     }
 
     @Override
-    public void deleteById(Long id){
+    public void deleteById(String id){
         categoryRepository.deleteById(id);
 
     }
 
     @Override
-    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
-        Menu menu = menuRepository.findById(categoryDTO.getMenuId()).orElseThrow(()-> new RuntimeException("Menu Not Found"));
-        Category category = new Category();
-        category.setName(categoryDTO.getName());
-        category.setMenu(menu);
-        return categoryRepository.save(category).toDTO();
+    public CategoryResponse createCategory(CategoryRequest request) {
+        Menu menu = menuRepository.findById(request.getMenuId()).orElseThrow(()-> new RuntimeException("Menu Not Found"));
+        Category category = CategoryMapper.toEntity(request,menu);
+        return CategoryMapper.toResponse(categoryRepository.save(category));
     }
 
 

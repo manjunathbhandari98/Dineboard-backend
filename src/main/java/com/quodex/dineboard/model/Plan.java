@@ -1,17 +1,24 @@
 package com.quodex.dineboard.model;
 
-import com.quodex.dineboard.dto.PlanDTO;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Table(name = "plans")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Plan {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     private String name;
 
@@ -30,95 +37,4 @@ public class Plan {
     @Column(name = "feature")
     private List<String> features;
 
-    public Plan() {}
-
-    public Plan(Integer id, String name, String description, double price, boolean allowsWhiteLabeling, boolean highlighted, Integer allowedMenus, List<String> features) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.allowsWhiteLabeling = allowsWhiteLabeling;
-        this.highlighted = highlighted;
-        this.allowedMenus = allowedMenus;
-        this.features = features;
-    }
-
-    public PlanDTO toDTO() {
-        return new PlanDTO(
-                this.id,
-                this.name,
-                this.description,
-                this.price,
-                this.allowsWhiteLabeling,
-                this.highlighted,
-                this.allowedMenus,
-                this.features
-        );
-    }
-
-    // --- Getters and Setters ---
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public boolean isAllowsWhiteLabeling() {
-        return allowsWhiteLabeling;
-    }
-
-    public void setAllowsWhiteLabeling(boolean allowsWhiteLabeling) {
-        this.allowsWhiteLabeling = allowsWhiteLabeling;
-    }
-
-    public boolean isHighlighted() {
-        return highlighted;
-    }
-
-    public void setHighlighted(boolean highlighted) {
-        this.highlighted = highlighted;
-    }
-
-    public Integer getAllowedMenus() {
-        return allowedMenus;
-    }
-
-    public void setAllowedMenus(Integer allowedMenus) {
-        this.allowedMenus = allowedMenus;
-    }
-
-    public List<String> getFeatures() {
-        return features;
-    }
-
-    public void setFeatures(List<String> features) {
-        this.features = features;
-    }
 }

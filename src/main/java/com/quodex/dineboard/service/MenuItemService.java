@@ -1,23 +1,24 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.MenuItemDTO;
+import com.quodex.dineboard.dto.request.MenuItemRequest;
+import com.quodex.dineboard.dto.response.MenuItemResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface MenuItemService {
-    MenuItemDTO createMenuItem(MenuItemDTO menuItemDTO, MultipartFile file);
+    MenuItemResponse createMenuItem(MenuItemRequest request, MultipartFile file);
 
-    MenuItemDTO getMenuItemById(Long id);
+    MenuItemResponse getMenuItemById(String id);
 
-    List<MenuItemDTO> getAllMenuItems();
+    List<MenuItemResponse> getAllMenuItems();
 
-    List<MenuItemDTO> getMenuItemsByMenuAndCategoryId(String menuId, Long categoryId);
+    List<MenuItemResponse> getMenuItemsByMenuAndCategoryId(String menuId, String categoryId);
 
-    MenuItemDTO updateMenuItem(Long id, MenuItemDTO menuItemDTO, MultipartFile file);
+    MenuItemResponse updateMenuItem(String id, MenuItemRequest request, MultipartFile file);
 
-    void deleteMenuItem(Long id);
+    void deleteMenuItem(String id);
 
-    List<MenuItemDTO> getMenuItemsByMenuId(String menuId);
+    List<MenuItemResponse> getMenuItemsByMenuId(String menuId);
 
 }

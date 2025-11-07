@@ -1,50 +1,56 @@
-    package com.quodex.dineboard.controller;
+package com.quodex.dineboard.controller;
 
-    import com.quodex.dineboard.dto.QRCodeDTO;
-    import com.quodex.dineboard.service.QRCodeService;
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.web.bind.annotation.*;
+import com.quodex.dineboard.dto.request.QRCodeRequest;
+import com.quodex.dineboard.dto.response.QRCodeResponse;
+import com.quodex.dineboard.service.QRCodeService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-    import java.util.List;
+import java.util.List;
 
-    @RestController
-    @RequestMapping("/api/qrcodes")
-    public class QRCodeController {
+@RestController
+@RequestMapping("/api/qrcodes")
+@CrossOrigin
+@RequiredArgsConstructor
+public class QRCodeController {
 
-        private final QRCodeService qrCodeService;
+    private final QRCodeService qrCodeService;
 
-        @Autowired
-        public QRCodeController(QRCodeService qrCodeService) {
-            this.qrCodeService = qrCodeService;
-        }
-
-        @GetMapping
-        public List<QRCodeDTO> getAllQRCodes() {
-            return qrCodeService.getAllQRCodes();
-        }
-
-        @GetMapping("/{id}")
-        public QRCodeDTO getQRCodeById(@PathVariable Long id) {
-            return qrCodeService.getQRCodeById(id);
-        }
-
-        @PostMapping
-        public QRCodeDTO createQRCode(@RequestBody QRCodeDTO dto) {
-            return qrCodeService.createQRCode(dto);
-        }
-
-        @PutMapping("/{id}")
-        public QRCodeDTO updateQRCode(@PathVariable Long id, @RequestBody QRCodeDTO dto) {
-            return qrCodeService.updateQRCode(id, dto);
-        }
-
-        @DeleteMapping("/{id}")
-        public void deleteQRCode(@PathVariable Long id) {
-            qrCodeService.deleteQRCode(id);
-        }
-
-        @GetMapping("/menu/{menuId}")
-        public List<QRCodeDTO> getQRCodesByMenuId(@PathVariable String menuId) {
-            return qrCodeService.getQRCodesByMenuId(menuId);
-        }
+    @GetMapping
+    public ResponseEntity<List<QRCodeResponse>> getAllQRCodes() {
+        List<QRCodeResponse> qrCodes = qrCodeService.getAllQRCodes();
+        return ResponseEntity.ok(qrCodes);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<QRCodeResponse> getQRCodeById(@PathVariable String id) {
+        QRCodeResponse qrCode = qrCodeService.getQRCodeById(id);
+        return ResponseEntity.ok(qrCode);
+    }
+
+    @PostMapping
+    public ResponseEntity<QRCodeResponse> createQRCode(@RequestBody QRCodeRequest request) {
+        QRCodeResponse createdQRCode = qrCodeService.createQRCode(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdQRCode);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<QRCodeResponse> updateQRCode(@PathVariable String id, @RequestBody QRCodeRequest request) {
+        QRCodeResponse updatedQRCode = qrCodeService.updateQRCode(id, request);
+        return ResponseEntity.ok(updatedQRCode);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteQRCode(@PathVariable String id) {
+        qrCodeService.deleteQRCode(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/menu/{menuId}")
+    public ResponseEntity<List<QRCodeResponse>> getQRCodesByMenuId(@PathVariable String menuId) {
+        List<QRCodeResponse> qrCodes = qrCodeService.getQRCodesByMenuId(menuId);
+        return ResponseEntity.ok(qrCodes);
+    }
+}

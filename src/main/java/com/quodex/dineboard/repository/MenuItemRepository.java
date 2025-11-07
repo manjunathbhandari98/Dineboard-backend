@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
-    List<MenuItem> findByMenuIdAndCategoryId(String menuId, Long categoryId);
+public interface MenuItemRepository extends JpaRepository<MenuItem, String> {
+    List<MenuItem> findByMenuIdAndCategoryId(String menuId, String categoryId);
 
     @Transactional
     void deleteByMenu(Menu menu);

@@ -1,60 +1,66 @@
 package com.quodex.dineboard.service;
 
-import com.quodex.dineboard.dto.UserDTO;
+import com.quodex.dineboard.mapper.UserMapper;
+import com.quodex.dineboard.dto.request.LoginRequest;
+import com.quodex.dineboard.dto.response.LoginResponse;
+import com.quodex.dineboard.dto.request.RegisterRequest;
+import com.quodex.dineboard.dto.request.UserRequest;
+import com.quodex.dineboard.jwt.JwtUtil;
 import com.quodex.dineboard.model.User;
 import com.quodex.dineboard.repository.PlanRepository;
 import com.quodex.dineboard.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private PlanRepository planRepository;
-
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final PlanRepository planRepository;
+    private final JwtUtil jwtUtil;
 
     @Override
-    public UserDTO registerUser(UserDTO userDTO) {
-        if (userRepository.existsByEmail(userDTO.getEmail())) {
+    public String registerUser(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists.");
         }
-
-
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        userDTO.setCreatedAt(LocalDateTime.now());
-        userDTO.setUpdatedAt(LocalDateTime.now());
-
-        User savedUser = userRepository.save(userDTO.toEntity());
-        return savedUser.toDTO();
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        User user = UserMapper.toEntity(request);
+        user.setCreatedAt(LocalDateTime.now());
+        userRepository.save(user);
+        return "Registered Successfully";
     }
 
-
     @Override
-    public UserDTO loginUser(String email, String rawPassword) {
-        User user = userRepository.findByEmail(email)
+    public LoginResponse loginUser(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
 
-        return user.toDTO();
+        //  Generate JWT token for the logged-in user
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        //  Return LoginResponse with token included
+        return LoginResponse.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .id(user.getId())
+                .jwt(token)
+                .build();
     }
 
     @Override
-    public UserDTO getUserByEmail(String email) {
+    public UserRequest getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .map(User::toDTO)
+                .map(UserMapper::toResponse)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
