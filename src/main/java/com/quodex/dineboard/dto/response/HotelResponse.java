@@ -19,5 +19,6 @@ public class HotelResponse {
     private String ownerId;
     private String website;
     private String description;
+    private String planId;
     private String planName;
 }

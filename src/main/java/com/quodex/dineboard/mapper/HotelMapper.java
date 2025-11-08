@@ -39,6 +39,7 @@ public class HotelMapper {
                 .description(hotel.getDescription())
                 .ownerId(hotel.getOwner() != null ? hotel.getOwner().getId() : null)
                 .planName(hotel.getPlan() != null ? hotel.getPlan().getName() : null)
+                .planId(hotel.getPlan() != null? hotel.getPlan().getId() : null)
                 .build();
     }
 }

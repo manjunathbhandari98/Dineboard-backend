@@ -1,4 +1,5 @@
 package com.quodex.dineboard.config;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,27 +13,27 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    // Inject the frontend URL from application.properties or application.yml
     @Value("${frontend.url}")
-    private String frontendUrl;
+    private String frontendUrls; // will contain comma-separated URLs
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Set allowed origin from frontend URL
-        config.setAllowedOrigins(List.of(frontendUrl)); // Fix: was missing closing bracket
+        // ✅ Split by comma and trim
+        List<String> allowedOrigins = Arrays.stream(frontendUrls.split(","))
+                .map(String::trim)
+                .toList();
 
-        // Allow common HTTP methods
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://192.168.1.8:5173"
+        ));
 
-        // Allow all headers
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-
-        // Allow credentials (like cookies, authorization headers, etc.)
         config.setAllowCredentials(true);
 
-        // Map the above configuration to all routes
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
 
