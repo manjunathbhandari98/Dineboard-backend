@@ -16,10 +16,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/hotels")
-@CrossOrigin
 @RequiredArgsConstructor
 public class HotelController {
-
         private final HotelService hotelService;
 
         //  Create a new hotel
@@ -32,10 +30,8 @@ public class HotelController {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 HotelRequest request = objectMapper.readValue(hotelJson, HotelRequest.class);
-
                 HotelResponse response = hotelService.createHotel(request, ownerId, file);
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
             } catch (JsonProcessingException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid hotel JSON: " + e.getMessage());
             }
@@ -72,10 +68,8 @@ public class HotelController {
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 HotelRequest request = objectMapper.readValue(hotelJson, HotelRequest.class);
-
                 HotelResponse updated = hotelService.updateHotel(id, request, file);
                 return ResponseEntity.ok(updated);
-
             } catch (JsonProcessingException e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid hotel JSON: " + e.getMessage());
             }
