@@ -21,7 +21,7 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copy the built jar from build stage
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/Dineboard-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port (Render uses PORT environment variable)
 EXPOSE 8080
