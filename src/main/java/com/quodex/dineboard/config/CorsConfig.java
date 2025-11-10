@@ -14,21 +14,19 @@ import java.util.List;
 public class CorsConfig {
 
     @Value("${frontend.url}")
-    private String frontendUrls; // will contain comma-separated URLs
+    private String frontendUrls; // comma-separated URLs (e.g. https://dine-board.vercel.app,https://localhost:5173)
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // ✅ Split by comma and trim
+        // ✅ Split by comma and trim spaces
         List<String> allowedOrigins = Arrays.stream(frontendUrls.split(","))
                 .map(String::trim)
                 .toList();
 
-        config.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://192.168.1.8:5173"
-        ));
+        // ✅ Set origins directly (not nested)
+        config.setAllowedOrigins(allowedOrigins);
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
